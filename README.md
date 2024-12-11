@@ -1,4 +1,32 @@
 # operativa
+Este código implementa el **Método Simplex** para resolver problemas de programación lineal, y proporciona una interfaz gráfica utilizando **Tkinter**. También ofrece una opción para visualizar los resultados gráficamente, pero solo para problemas con dos variables.
+
+### Explicación del Código:
+
+1. **Clase `SimplexMethod`**:
+   - **Atributos**:
+     - `A`: matriz de coeficientes de las restricciones.
+     - `b`: vector de valores en el lado derecho de las restricciones.
+     - `c`: vector de coeficientes de la función objetivo.
+     - `num_variables`: número de variables del problema.
+     - `num_constraints`: número de restricciones.
+   - **Métodos**:
+     - `_initialize_tableau`: crea la tabla inicial para el algoritmo simplex.
+     - `_pivot_column`: encuentra la columna pivote.
+     - `_pivot_row`: encuentra la fila pivote usando la prueba de relación mínima positiva.
+     - `_perform_pivot`: realiza una operación de pivote en la tabla.
+     - `solve`: ejecuta el algoritmo simplex y retorna los pasos, la solución óptima y el valor óptimo.
+     - `plot_graphical_method`: dibuja el método gráfico para problemas con dos variables.
+
+2. **Clase `SimplexApp`**:
+   - Se utiliza **Tkinter** para crear una interfaz gráfica donde el usuario puede ingresar el número de variables, restricciones y los coeficientes para resolver el problema de programación lineal.
+   - Permite resolver el problema usando el método simplex y visualizar la solución en la interfaz.
+
+### Librerías Instaladas:
+1. **NumPy** (`import numpy as np`): Para manejar matrices y operaciones matemáticas.
+2. **Tkinter** (`import tkinter as tk`): Para crear la interfaz gráfica del usuario (GUI).
+3. **Matplotlib** (`import matplotlib.pyplot as plt`): Para graficar el problema de programación lineal en el método gráfico, solo para problemas de 2 variables.
+
 Para instalar las librerías que se usan en el código, puedes utilizar el gestor de paquetes **pip**. A continuación te indico cómo instalar cada una de ellas desde la línea de comandos (terminal o consola):
 
 1. **NumPy**:
