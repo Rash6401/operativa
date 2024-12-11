@@ -1,39 +1,54 @@
-import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+from scipy.optimize import linprog
+import tkinter as tk
+from tkinter import messagebox
 
-# Datos de ventas
-meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
-ventas = [120, 130, 125, 140, 135, 145, 150, 160, 155, 165, 170, 175]
+def resolver_programa():
+    try:
+        # Leer datos ingresados
+        funcion_objetivo = list(map(float, entry_objetivo.get().split(',')))
+        restricciones = entry_restricciones.get().split(';')
+        lados_derechos = list(map(float, entry_lados.get().split(',')))
 
-# Crear un DataFrame
-data = pd.DataFrame({'Mes': meses, 'Ventas': ventas})
+        # Procesar restricciones
+        A = [list(map(float, r.split(','))) for r in restricciones]
 
-# 1. Promedios móviles
-def promedio_movil(datos, n):
-    return datos.rolling(window=n).mean()
+        # Resolver el problema
+        resultado = linprog(c=funcion_objetivo, A_ub=A, b_ub=lados_derechos, method='highs')
 
-data['Promedio Movil (3 meses)'] = promedio_movil(data['Ventas'], 3)
+        # Mostrar resultados
+        if resultado.success:
+            solucion = f"Solución óptima:\n"
+            for i, valor in enumerate(resultado.x, start=1):
+                solucion += f"x{i} = {valor:.2f}\n"
+            solucion += f"Valor óptimo de la función objetivo: {-resultado.fun:.2f}"
+        else:
+            solucion = "No se pudo encontrar una solución óptima."
 
-# 2. Suavización Exponencial
-def suavizacion_exponencial(datos, alpha):
-    return datos.ewm(alpha=alpha, adjust=False).mean()
+        messagebox.showinfo("Resultados", solucion)
 
-data['Suavización Exponencial (α=0.3)'] = suavizacion_exponencial(data['Ventas'], 0.3)
+    except Exception as e:
+        messagebox.showerror("Error", f"Hubo un problema con los datos: {e}")
 
-# Mostrar resultados
-print(data)
+# Crear ventana
+ventana = tk.Tk()
+ventana.title("Programación Lineal")
 
-# Graficar
-plt.figure(figsize=(10, 6))
-plt.plot(data['Mes'], data['Ventas'], label='Ventas reales', marker='o')
-plt.plot(data['Mes'], data['Promedio Movil (3 meses)'], label='Promedio móvil (3 meses)', linestyle='--')
-plt.plot(data['Mes'], data['Suavización Exponencial (α=0.3)'], label='Suavización exponencial (α=0.3)', linestyle='--')
-plt.xticks(rotation=45)
-plt.legend()
-plt.title('Métodos de Pronóstico')
-plt.xlabel('Mes')
-plt.ylabel('Ventas')
-plt.grid()
-plt.show()
+# Etiquetas y campos de entrada
+tk.Label(ventana, text="Función Objetivo (ej: -40,-50):").grid(row=0, column=0, sticky="e")
+entry_objetivo = tk.Entry(ventana, width=30)
+entry_objetivo.grid(row=0, column=1)
 
+tk.Label(ventana, text="Restricciones (ej: 2,3;4,2):").grid(row=1, column=0, sticky="e")
+entry_restricciones = tk.Entry(ventana, width=30)
+entry_restricciones.grid(row=1, column=1)
+
+tk.Label(ventana, text="Lados Derechos (ej: 120,160):").grid(row=2, column=0, sticky="e")
+entry_lados = tk.Entry(ventana, width=30)
+entry_lados.grid(row=2, column=1)
+
+# Botón para resolver
+tk.Button(ventana, text="Resolver", command=resolver_programa).grid(row=3, column=1, pady=10)
+
+# Iniciar ventana
+ventana.mainloop()
